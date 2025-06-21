@@ -1,0 +1,80 @@
+class SearchSuggestionSystem {
+    /**
+     * @param {string[]} products
+     */
+    constructor(products) {
+        // Sort the products lexicographically once during initialization.
+        // This is crucial for returning lexicographically sorted suggestions efficiently later.
+        this.products = products.sort();
+    }
+
+    /**
+     * @param {string} searchWord
+     * @return {string[][]}
+     */
+    getSuggestions(searchWord) {
+        const result = [];
+        let currentPrefix = '';
+
+        for (let i = 0; i < searchWord.length; i++) {
+            currentPrefix += searchWord[i]; // Build the current prefix
+            const suggestionsForPrefix = [];
+
+            // Iterate through the sorted products to find matches for the current prefix.
+            for (const product of this.products) {
+                // Check if the product starts with the current prefix
+                if (product.startsWith(currentPrefix)) {
+                    suggestionsForPrefix.push(product);
+                    // We only need up to 3 suggestions, so break if we have enough
+                    if (suggestionsForPrefix.length === 3) {
+                        break;
+                    }
+                }
+            }
+            result.push(suggestionsForPrefix);
+        }
+
+        return result;
+    }
+}
+
+// Example usage based on the provided image:
+const products1 = ["mobile", "mouse", "moneypot", "monitor", "mousepad"];
+const searchWord1 = "mouse";
+
+const system1 = new SearchSuggestionSystem(products1);
+const output1 = system1.getSuggestions(searchWord1);
+console.log("Input products:", products1);
+console.log("Input searchWord:", searchWord1);
+console.log("Output:", JSON.stringify(output1, null, 2));
+
+/*
+Expected Output for Example:
+[
+  ["mobile", "moneypot", "monitor"],
+  ["mobile", "moneypot", "monitor"],
+  ["mouse", "mousepad"],
+  ["mouse", "mousepad"],
+  ["mouse", "mousepad"]
+]
+*/
+
+// Another example
+const products2 = ["bags", "baggage", "banner", "box", "bags", "balloon"];
+const searchWord2 = "bag";
+const system2 = new SearchSuggestionSystem(products2);
+const output2 = system2.getSuggestions(searchWord2);
+console.log("\nInput products:", products2);
+console.log("Input searchWord:", searchWord2);
+console.log("Output:", JSON.stringify(output2, null, 2));
+
+/*
+Expected Output for Example 2:
+Input products: [ 'bags', 'baggage', 'banner', 'box', 'bags', 'balloon' ]
+Input searchWord: bag
+Output: [
+  [ 'baggage', 'bags', 'balloon' ], // for 'b'
+  [ 'baggage', 'bags', 'balloon' ], // for 'ba'
+  [ 'baggage', 'bags', 'balloon' ]  // for 'bag'
+]
+*/
